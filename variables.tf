@@ -44,7 +44,8 @@ variable "connection_data" {
     password             = optional(string)
     connection           = string
     network_os           = string
-    ssh_private_key_file = string
+    ssh_private_key_file = optional(string)
+    ssh_private_key      = optional(string)
   })
 }
 
