@@ -37,7 +37,7 @@ variable "labels" {
 }
 
 variable "connection_data" {
-  description = "Normalized transport/auth contract for the target Linux host."
+  description = "Normalized transport/auth contract for the target Linux host. Passed through to linux_apply unchanged."
   type = object({
     host                 = string
     user                 = string
@@ -46,6 +46,7 @@ variable "connection_data" {
     network_os           = string
     ssh_private_key_file = optional(string)
     ssh_private_key      = optional(string)
+    ssh_common_args      = optional(string, "")
   })
 }
 
