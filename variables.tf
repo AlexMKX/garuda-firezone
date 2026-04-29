@@ -9,9 +9,9 @@ variable "host_name" {
 }
 
 variable "firezone_dir" {
-  description = "Target directory for the Firezone compose project."
+  description = "Target directory for the Firezone compose project. Default sits under /opt/garuda so that data disks mounted at /opt/garuda automatically persist Firezone state (Postgres DB, WireGuard private key, Caddy data) across VM recreates."
   type        = string
-  default     = "/opt/firezone"
+  default     = "/opt/garuda/firezone"
 }
 
 variable "server_url" {
