@@ -16,6 +16,7 @@ variables {
     connection           = "ssh"
     network_os           = "linux"
     ssh_private_key_file = "~/.ssh/id_ed25519"
+    instance_token       = "i-test-baseline"
   }
 }
 
