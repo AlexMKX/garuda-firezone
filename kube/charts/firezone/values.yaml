@@ -1,0 +1,51 @@
+namespace: garuda
+name: firezone
+firezoneDir: /opt/garuda/firezone
+# Required: consumer module supplies via var.server_fqdn. Empty default
+# combined with values.schema.json minLength: 1 fails `helm install`
+# fast when a deployment forgets to override.
+serverFqdn: ""
+# Required: consumer module supplies via var.client_subnet. Empty
+# default fails fast (see schema minLength: 1).
+clientSubnet: ""
+# Required: derived from clientSubnet by the consumer module
+# (cidrhost(var.client_subnet, 1)). Empty default fails fast.
+wireguardIpv4Address: ""
+wireguardIpv4Masquerade: false
+wireguardIpv6Masquerade: false
+wgListenPort: 51620
+# Required: consumer module supplies via var.tls_cluster_issuer (output
+# of modules/cert_manager). Empty default fails fast.
+tlsClusterIssuer: ""
+nicAttach:
+  - backbone
+  - border
+labels: {}
+images:
+  firezone: ""
+  postgres: postgres:15
+  conntrackLog: ""
+  frr: ""
+# Required: consumer module supplies via var.admin_email. Empty default
+# fails fast.
+adminEmail: ""
+# Required: consumer module supplies via var.admin_password. Empty
+# default fails fast.
+adminPassword: ""
+secrets:
+  guardianSecretKey: "placeholder_guardian"
+  secretKeyBase: "placeholder_secret"
+  liveViewSigningSalt: "placeholder_liveview"
+  cookieSigningSalt: "placeholder_cookiesigning"
+  cookieEncryptionSalt: "placeholder_cookieencryption"
+  databaseEncryptionKey: "placeholder_dbencryption"
+  databasePassword: "placeholder_dbpassword"
+# ospf is null when omitted; FRR sidecar is then NOT rendered.
+ospf: null
+# transit.interfaces is the CSV ingress list for transit_watcher running
+# inside the FRR sidecar. When non-empty, the deployment exports
+# PBR_TRANSIT_TAG=201 (matches frr_injector/config.py:TRANSIT_TAG) and
+# PBR_TRANSIT_INTERFACES — the sidecar entrypoint then launches
+# transit_watcher.py automatically.
+transit:
+  interfaces: []
