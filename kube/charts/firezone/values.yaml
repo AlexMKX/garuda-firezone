@@ -14,6 +14,12 @@ wireguardIpv4Address: ""
 wireguardIpv4Masquerade: false
 wireguardIpv6Masquerade: false
 wgListenPort: 51620
+# Firezone telemetry phone-home (TELEMETRY_ENABLED, upstream default true).
+# Disabled by default: a private VPN topology must not call out to
+# ping.firez.one. Leaving it on produces a harmless but noisy
+# `:nxdomain url=https://ping.firez.one` connectivity-check error in the
+# firezone container logs because that endpoint has no public A/AAAA record.
+telemetryEnabled: false
 # Required: consumer module supplies via var.tls_cluster_issuer (output
 # of modules/cert_manager). Empty default fails fast.
 tlsClusterIssuer: ""

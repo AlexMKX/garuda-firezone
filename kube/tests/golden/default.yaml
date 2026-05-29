@@ -22,6 +22,7 @@ stringData:
   FZ_PORT: "13000"
   WIREGUARD_PORT: "51620"
   PHOENIX_SECURE_COOKIES: "true"
+  TELEMETRY_ENABLED: "false"
   WIREGUARD_IPV4_MASQUERADE: "false"
   WIREGUARD_IPV6_MASQUERADE: "false"
   GUARDIAN_SECRET_KEY: "fixture-guardian"
@@ -96,7 +97,7 @@ spec:
         garuda.managed-by: helm
       annotations:
         k8s.v1.cni.cncf.io/networks: "backbone@backbone,border@border"
-        checksum/env-secret: a35befda98b1ba4a4d9f0e90ebcea0737df90c2a23af159bcca6b646764b71f7
+        checksum/env-secret: 15031d01d766acfa402927ebc9eea65a5710c93eb6b9ef547bd0c4d728eb04ce
     spec:
       restartPolicy: Always
       # Match the existing docker-compose stack's sysctls. All three are
