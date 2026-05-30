@@ -11,7 +11,10 @@ variables {
   admin_email         = "admin@example.net"
   admin_password      = "fixture-password"
   client_subnet       = "198.51.100.128/25"
-  tls_cluster_issuer  = "letsencrypt-prod"
+  gateway_ref = {
+    name      = "platform-gateway"
+    namespace = "gateway-system"
+  }
   encryption_secrets = {
     guardianSecretKey     = "fixture-guardian"
     secretKeyBase         = "fixture-secret-key-base"
@@ -49,12 +52,16 @@ run "values_include_firezone_dir_and_server_fqdn" {
   }
 }
 
-run "values_include_tls_cluster_issuer_and_wg_port" {
+run "gateway_ref_propagates" {
   command = plan
 
   assert {
-    condition     = strcontains(helm_release.firezone.values[0], "\"tlsClusterIssuer\": \"letsencrypt-prod\"")
-    error_message = "rendered values must include tlsClusterIssuer"
+    condition = (
+      strcontains(helm_release.firezone.values[0], "\"gatewayRef\":") &&
+      strcontains(helm_release.firezone.values[0], "\"name\": \"platform-gateway\"") &&
+      strcontains(helm_release.firezone.values[0], "\"namespace\": \"gateway-system\"")
+    )
+    error_message = "rendered values must include gatewayRef with name and namespace"
   }
 
   assert {
@@ -198,16 +205,6 @@ run "reject_invalid_client_subnet" {
   expect_failures = [var.client_subnet]
 }
 
-run "reject_empty_tls_cluster_issuer" {
-  command = plan
-
-  variables {
-    tls_cluster_issuer = ""
-  }
-
-  expect_failures = [var.tls_cluster_issuer]
-}
-
 run "reject_invalid_ospf_router_id" {
   command = plan
 
@@ -219,4 +216,15 @@ run "reject_invalid_ospf_router_id" {
   }
 
   expect_failures = [var.ospf]
+}
+
+run "reject_empty_gateway_ref" {
+  command = plan
+  variables {
+    gateway_ref = {
+      name      = ""
+      namespace = ""
+    }
+  }
+  expect_failures = [var.gateway_ref]
 }

@@ -141,16 +141,23 @@ variable "wireguard_ipv6_masquerade" {
   default     = false
 }
 
-variable "tls_cluster_issuer" {
-  description = <<EOT
-Name of the cert-manager `ClusterIssuer` resource used to provision the
-Firezone TLS certificate. Typically the output of `module.cert_manager`.
-EOT
-  type        = string
-
+variable "gateway_ref" {
+  description = <<-EOT
+    Parent Gateway reference for the HTTPRoute. Both `name` and
+    `namespace` are mandatory and non-empty. Supplied by the platform
+    `k8s_gateway_bootstrap` module via its outputs `gateway_name` and
+    `gateway_namespace`. The chart's values.schema.json enforces
+    non-empty at Helm template time; this Terraform-level validation
+    is the fast-fail mirror so misconfiguration surfaces during `tofu
+    plan`, not at apply.
+  EOT
+  type = object({
+    name      = string
+    namespace = string
+  })
   validation {
-    condition     = length(var.tls_cluster_issuer) > 0
-    error_message = "tls_cluster_issuer must be a non-empty ClusterIssuer name."
+    condition     = length(var.gateway_ref.name) > 0 && length(var.gateway_ref.namespace) > 0
+    error_message = "gateway_ref.name and gateway_ref.namespace must both be non-empty."
   }
 }
 

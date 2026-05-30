@@ -224,11 +224,11 @@ spec:
               add: ["NET_ADMIN", "NET_RAW", "SYS_ADMIN"]
 
 ---
-# Source: firezone/templates/certificate.yaml
-apiVersion: cert-manager.io/v1
-kind: Certificate
+# Source: firezone/templates/httproute.yaml
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
 metadata:
-  name: firezone-tls
+  name: "firezone"
   namespace: "garuda"
   labels:
     app.kubernetes.io/name: firezone
@@ -236,35 +236,12 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     garuda.managed-by: helm
 spec:
-  secretName: firezone-tls
-  duration: 2160h    # 90d
-  renewBefore: 720h  # 30d
-  dnsNames:
+  parentRefs:
+    - name: "platform-gateway"
+      namespace: "gateway-system"
+  hostnames:
     - "hub.example.net"
-  issuerRef:
-    kind: ClusterIssuer
-    name: "letsencrypt-prod"
-
----
-# Source: firezone/templates/ingressroute.yaml
-apiVersion: traefik.io/v1alpha1
-kind: IngressRoute
-metadata:
-  name: firezone
-  namespace: "garuda"
-  labels:
-    app.kubernetes.io/name: firezone
-    app.kubernetes.io/instance: "firezone"
-    app.kubernetes.io/managed-by: Helm
-    garuda.managed-by: helm
-spec:
-  entryPoints:
-    - websecure
-  routes:
-    - kind: Rule
-      match: Host(`hub.example.net`)
-      services:
-        - name: firezone
+  rules:
+    - backendRefs:
+        - name: "firezone"
           port: 13000
-  tls:
-    secretName: firezone-tls

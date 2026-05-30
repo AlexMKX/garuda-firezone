@@ -49,7 +49,10 @@ resource "helm_release" "firezone" {
       wireguardIpv4Masquerade = var.wireguard_ipv4_masquerade
       wireguardIpv6Masquerade = var.wireguard_ipv6_masquerade
       wgListenPort            = var.wg_listen_port
-      tlsClusterIssuer        = var.tls_cluster_issuer
+      gatewayRef = {
+        name      = var.gateway_ref.name
+        namespace = var.gateway_ref.namespace
+      }
       nicAttach               = var.nic_attach
       labels                  = var.labels
       images = {

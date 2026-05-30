@@ -11,7 +11,10 @@ variables {
   admin_email         = "admin@example.net"
   admin_password      = "fixture-password"
   client_subnet       = "198.51.100.128/25"
-  tls_cluster_issuer  = "letsencrypt-prod"
+  gateway_ref = {
+    name      = "platform-gateway"
+    namespace = "gateway-system"
+  }
 }
 
 run "generated_path_includes_all_secret_keys" {

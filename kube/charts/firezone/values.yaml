@@ -20,9 +20,11 @@ wgListenPort: 51620
 # `:nxdomain url=https://ping.firez.one` connectivity-check error in the
 # firezone container logs because that endpoint has no public A/AAAA record.
 telemetryEnabled: false
-# Required: consumer module supplies via var.tls_cluster_issuer (output
-# of modules/cert_manager). Empty default fails fast.
-tlsClusterIssuer: ""
+# Required: consumer module supplies via var.gateway_ref. Both empty
+# strings combined with the schema's minLength fail fast.
+gatewayRef:
+  name: ""
+  namespace: ""
 nicAttach:
   - backbone
   - border

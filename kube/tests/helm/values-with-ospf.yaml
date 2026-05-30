@@ -7,7 +7,9 @@ wireguardIpv4Address: 198.51.100.129
 wireguardIpv4Masquerade: false
 wireguardIpv6Masquerade: false
 wgListenPort: 51620
-tlsClusterIssuer: letsencrypt-prod
+gatewayRef:
+  name: platform-gateway
+  namespace: gateway-system
 nicAttach:
   - backbone
   - border

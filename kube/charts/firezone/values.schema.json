@@ -12,7 +12,7 @@
     "wireguardIpv4Masquerade",
     "wireguardIpv6Masquerade",
     "wgListenPort",
-    "tlsClusterIssuer",
+    "gatewayRef",
     "nicAttach",
     "images",
     "adminEmail",
@@ -30,7 +30,15 @@
     "wireguardIpv6Masquerade": { "type": "boolean" },
     "wgListenPort":     { "type": "integer", "minimum": 1, "maximum": 65535 },
     "telemetryEnabled": { "type": "boolean" },
-    "tlsClusterIssuer": { "type": "string", "minLength": 1 },
+    "gatewayRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "namespace"],
+      "properties": {
+        "name":      { "type": "string", "minLength": 1 },
+        "namespace": { "type": "string", "minLength": 1 }
+      }
+    },
     "nicAttach":        { "type": "array", "items": { "type": "string" } },
     "labels": {
       "type": "object",

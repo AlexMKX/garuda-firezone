@@ -4,10 +4,10 @@ Deploys the Firezone application stack as one multi-container Kubernetes
 Deployment with persistent state on a hostPath volume backed by the YC
 data disk attached to the hub VM.
 
-Admin UI is exposed via the k3s-bundled Traefik ingress through an
-`IngressRoute` CRD, with TLS terminated by a cert-manager `Certificate`
-that requests certs from the cluster issuer provided via
-`tls_cluster_issuer` (typically Let's Encrypt with HTTP-01).
+Admin UI is exposed via a Gateway API `HTTPRoute` that attaches to the
+parent `Gateway` supplied via `gateway_ref` (typically managed by the
+`k8s_gateway_bootstrap` platform module). TLS termination is owned by the
+gateway; this module does not create a cert-manager `Certificate`.
 
 The Firezone-managed WireGuard endpoint is exposed as a `hostPort` on
 UDP `var.wg_listen_port` (default 51620) on the hub node.
@@ -33,7 +33,7 @@ creates inside the pod netns).
 | `admin_password` | yes (sensitive) | Initial admin password (`DEFAULT_ADMIN_PASSWORD`). |
 | `client_subnet` | yes | CIDR for WireGuard clients (`WIREGUARD_IPV4_NETWORK`). |
 | `wg_listen_port` | no | UDP port firezone WireGuard listens on. Default `51620`. |
-| `tls_cluster_issuer` | yes | Name of cert-manager `ClusterIssuer` to issue the `firezone-tls` cert. |
+| `gateway_ref` | yes | Parent Gateway reference object (`{name, namespace}`) for the HTTPRoute. Supplied by the platform `k8s_gateway_bootstrap` module. |
 | `nic_attach` | no | Default `["backbone", "border"]`. Becomes the Multus annotation. |
 | `labels` | no | Extra metadata labels merged into pod/deployment labels. |
 | `ospf` | no | Structured OSPF intent. When `null`, no FRR sidecar is rendered. |
@@ -76,7 +76,10 @@ module "firezone_kube" {
   admin_email         = local.firezone_facts.default_admin_email
   admin_password      = local.firezone_facts.admin_password
   client_subnet       = local.firezone_facts.client_subnet
-  tls_cluster_issuer  = module.cert_manager.cluster_issuer_name
+  gateway_ref = {
+    name      = module.k8s_gateway_bootstrap.gateway_name
+    namespace = module.k8s_gateway_bootstrap.gateway_namespace
+  }
 
   ospf = {
     router_id  = "198.51.100.22"
@@ -87,11 +90,11 @@ module "firezone_kube" {
 
 ## What this module does NOT do
 
-- It does not install cert-manager itself. See `modules/cert_manager` for
-  the `ClusterIssuer` whose name is passed via `tls_cluster_issuer`.
-- It does not run Caddy or any other ingress sidecar. TLS termination
-  happens at the k3s-bundled Traefik ingress controller through the
-  `IngressRoute` rendered by this chart.
+- It does not install cert-manager or manage TLS certificates. TLS is
+  terminated at the parent Gateway (`gateway_ref`), typically managed by
+  the `k8s_gateway_bootstrap` platform module.
+- It does not run Caddy or any other ingress sidecar. Routing is handled
+  entirely by the Gateway API `HTTPRoute` rendered by this chart.
 - It does not run smtp4dev or autoheal. SMTP fan-out is not part of the
   k8s topology; pod liveness is owned by kubelet readiness/liveness
   probes.
