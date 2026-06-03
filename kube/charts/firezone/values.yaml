@@ -34,6 +34,7 @@ images:
   postgres: postgres:15
   conntrackLog: ""
   frr: ""
+  oidcReconcile: ""
 # Required: consumer module supplies via var.admin_email. Empty default
 # fails fast.
 adminEmail: ""
@@ -57,3 +58,9 @@ ospf: null
 # transit_watcher.py automatically.
 transit:
   interfaces: []
+# OIDC reconcile. When oidc.providers is empty, no sidecar / Secret /
+# shareProcessNamespace is rendered (OIDC off). When non-empty, the
+# oidc-reconcile sidecar reconciles providers onto the running instance.
+oidc:
+  managed: merge
+  providers: {}

@@ -228,3 +228,52 @@ run "reject_empty_gateway_ref" {
   }
   expect_failures = [var.gateway_ref]
 }
+
+run "oidc_disabled_by_default_renders_no_oidc_block" {
+  command = plan
+
+  assert {
+    condition     = strcontains(helm_release.firezone.values[0], "\"oidc\":")
+    error_message = "rendered values must always include an oidc key"
+  }
+  assert {
+    condition     = strcontains(helm_release.firezone.values[0], "\"providers\": {}")
+    error_message = "with default var.oidc_providers={}, rendered oidc.providers must be empty"
+  }
+  assert {
+    condition     = strcontains(helm_release.firezone.values[0], "\"managed\": \"merge\"")
+    error_message = "default oidc.managed must be 'merge'"
+  }
+}
+
+run "oidc_providers_propagate" {
+  command = plan
+
+  variables {
+    oidc_reconcile_image = "python:3.12-slim-bookworm"
+    oidc_providers = {
+      google = {
+        client_id     = "fixture-client-id"
+        client_secret = "fixture-client-secret"
+        label         = "Google"
+      }
+    }
+  }
+
+  assert {
+    condition     = strcontains(helm_release.firezone.values[0], "\"oidcReconcile\": \"python:3.12-slim-bookworm\"")
+    error_message = "rendered values must include images.oidcReconcile"
+  }
+  assert {
+    condition     = strcontains(helm_release.firezone.values[0], "\"client_id\": \"fixture-client-id\"")
+    error_message = "rendered values must include the provider client_id"
+  }
+}
+
+run "reject_invalid_oidc_managed" {
+  command = plan
+  variables {
+    oidc_managed = "bogus"
+  }
+  expect_failures = [var.oidc_managed]
+}

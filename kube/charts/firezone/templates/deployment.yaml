@@ -22,11 +22,18 @@ spec:
       annotations:
         k8s.v1.cni.cncf.io/networks: {{ include "firezone.networks" . | quote }}
         checksum/env-secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
+        {{- if .Values.oidc.providers }}
+        checksum/oidc-secret: {{ include (print $.Template.BasePath "/oidc-secret.yaml") . | sha256sum }}
+        checksum/oidc-reconcile: {{ include (print $.Template.BasePath "/oidc-reconcile-configmap.yaml") . | sha256sum }}
+        {{- end }}
         {{- if .Values.ospf }}
         checksum/frr-config: {{ include "frr-sidecar.configmap" (dict "name" .Values.name "namespace" .Values.namespace "ospf" .Values.ospf) | sha256sum }}
         {{- end }}
     spec:
       restartPolicy: Always
+      {{- if .Values.oidc.providers }}
+      shareProcessNamespace: true
+      {{- end }}
       # Match the existing docker-compose stack's sysctls. All three are
       # flagged "unsafe" by upstream kubelet and must be allow-listed at
       # k3s install time via
@@ -53,6 +60,11 @@ spec:
           hostPath:
             path: {{ printf "%s/postgres-data" .Values.firezoneDir | quote }}
             type: DirectoryOrCreate
+        {{- if .Values.oidc.providers }}
+        - name: oidc-reconcile-script
+          configMap:
+            name: {{ .Values.name }}-oidc-reconcile
+        {{- end }}
         {{- $frrVol := include "frr-sidecar.volume" (dict
               "name" .Values.name
               "ospf" .Values.ospf
@@ -127,3 +139,38 @@ spec:
               "transit" .Values.transit
             ) -}}
         {{- if $frr }}{{ $frr | nindent 8 }}{{- end }}
+        {{- if .Values.oidc.providers }}
+        - name: oidc-reconcile
+          image: {{ .Values.images.oidcReconcile | quote }}
+          imagePullPolicy: IfNotPresent
+          command: ["python3", "/opt/oidc-reconcile/oidc_reconcile.py"]
+          env:
+            - name: OIDC_MANAGED
+              value: {{ .Values.oidc.managed | quote }}
+            - name: FZ_API_URL
+              value: "http://127.0.0.1:13000"
+            - name: FZ_RELEASE_DIR
+              value: "/app"
+          # firezone-env is REQUIRED, not over-broad: the nsenter-launched
+          # bin/create-api-token (eval mode) inherits this env and needs
+          # DATABASE_*/secrets to spawn a BEAM that reaches Postgres.
+          envFrom:
+            - secretRef:
+                name: {{ .Values.name }}-env
+            - secretRef:
+                name: {{ .Values.name }}-oidc
+          securityContext:
+            runAsUser: 0
+            capabilities:
+              # Phase 0 spike confirmed: SYS_ADMIN(setns ns), SYS_PTRACE(open
+              # /proc/<pid>/ns/*), NET_ADMIN(overlay bootstrap `ip`).
+              add: ["SYS_PTRACE", "SYS_ADMIN", "NET_ADMIN"]
+          readinessProbe:
+            exec:
+              command: ["test", "-f", "/tmp/oidc-reconcile-ok"]
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          volumeMounts:
+            - name: oidc-reconcile-script
+              mountPath: /opt/oidc-reconcile
+        {{- end }}

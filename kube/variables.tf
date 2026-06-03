@@ -225,3 +225,40 @@ EOT
     interfaces = []
   }
 }
+
+variable "oidc_providers" {
+  description = <<-EOT
+Map of OIDC provider_key -> provider config reconciled onto the running
+Firezone instance via the in-pod reconcile sidecar. Empty map disables OIDC
+entirely (no sidecar, no shareProcessNamespace, no oidc Secret).
+EOT
+  type = map(object({
+    client_id              = string
+    client_secret          = string
+    label                  = optional(string)
+    discovery_document_uri = optional(string)
+    scope                  = optional(string)
+    response_type          = optional(string)
+    redirect_uri           = optional(string)
+    auto_create_users      = optional(bool)
+  }))
+  default   = {}
+  sensitive = true
+}
+
+variable "oidc_managed" {
+  description = "Reconcile mode: 'merge' keeps unmanaged providers; 'replace' prunes them (old role semantics)."
+  type        = string
+  default     = "merge"
+
+  validation {
+    condition     = contains(["merge", "replace"], var.oidc_managed)
+    error_message = "oidc_managed must be 'merge' or 'replace'."
+  }
+}
+
+variable "oidc_reconcile_image" {
+  description = "Image for the oidc-reconcile sidecar. Must ship python3 and nsenter (util-linux)."
+  type        = string
+  default     = "python:3.12-slim-bookworm"
+}

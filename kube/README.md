@@ -55,7 +55,7 @@ creates inside the pod netns).
 | Output | Description |
 |---|---|
 | `deployment_name` | Equals `var.name`. |
-| `service_url` | `"https://${var.server_fqdn}"`. Consumed by `firezone_oidc`. |
+| `service_url` | `"https://${var.server_fqdn}"`. Consumed by the in-pod OIDC reconcile sidecar. |
 
 ## Providers
 
@@ -98,5 +98,5 @@ module "firezone_kube" {
 - It does not run smtp4dev or autoheal. SMTP fan-out is not part of the
   k8s topology; pod liveness is owned by kubelet readiness/liveness
   probes.
-- It does not provision the `firezone_oidc` REST API client. That stays
-  in `modules/firezone/oidc`, which depends on this module by FQDN.
+- OIDC provider configuration is applied by the in-pod reconcile sidecar
+  (`oidc_reconcile`) bundled in this module's Helm chart.

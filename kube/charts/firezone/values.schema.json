@@ -17,7 +17,8 @@
     "images",
     "adminEmail",
     "adminPassword",
-    "secrets"
+    "secrets",
+    "oidc"
   ],
   "properties": {
     "namespace":        { "type": "string", "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$" },
@@ -49,10 +50,11 @@
       "additionalProperties": false,
       "required": ["firezone", "postgres", "conntrackLog"],
       "properties": {
-        "firezone":     { "type": "string" },
-        "postgres":     { "type": "string" },
-        "conntrackLog": { "type": "string" },
-        "frr":          { "type": "string" }
+        "firezone":      { "type": "string" },
+        "postgres":      { "type": "string" },
+        "conntrackLog":  { "type": "string" },
+        "frr":           { "type": "string" },
+        "oidcReconcile": { "type": "string" }
       }
     },
     "adminEmail":    { "type": "string", "minLength": 1 },
@@ -99,6 +101,15 @@
       "properties": {
         "interfaces": { "type": "array", "items": { "type": "string" } }
       }
+    },
+    "oidc": {
+      "type": "object",
+      "properties": {
+        "managed":   { "type": "string", "enum": ["merge", "replace"] },
+        "providers": { "type": "object" }
+      },
+      "required": ["managed", "providers"],
+      "additionalProperties": false
     },
     "frr-sidecar": {
       "type": "object"
