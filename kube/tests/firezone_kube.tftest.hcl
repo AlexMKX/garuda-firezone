@@ -229,6 +229,21 @@ run "reject_empty_gateway_ref" {
   expect_failures = [var.gateway_ref]
 }
 
+run "values_carry_runtime_patch_checksum" {
+  command = plan
+
+  # #51: firezone helm_release must pass a template-checksum value so tofu
+  # detects drift when frr-sidecar library templates change.
+  assert {
+    condition     = strcontains(helm_release.firezone.values[0], "\"runtimePatchChecksum\":")
+    error_message = "firezone values must include runtimePatchChecksum (frr-sidecar library template drift sentinel, #51)"
+  }
+  assert {
+    condition     = !strcontains(helm_release.firezone.values[0], "\"runtimePatchChecksum\": \"\"")
+    error_message = "runtimePatchChecksum must be a non-empty sha256, not the empty default"
+  }
+}
+
 run "oidc_disabled_by_default_renders_no_oidc_block" {
   command = plan
 

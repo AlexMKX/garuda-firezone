@@ -8,6 +8,17 @@ locals {
     transit_provider   = var.ospf.transit_provider
   }
 
+  _frr_lib = "${path.module}/../../frr-sidecar/charts/frr-sidecar/templates"
+  # Track frr-sidecar library chart template changes so helm_release upgrades
+  # when library templates change (#51). Passed as a helm value so tofu detects
+  # drift; not consumed inside any chart template.
+  runtime_patch_checksum = sha256(join("", [
+    filesha256("${local._frr_lib}/_container.tpl"),
+    filesha256("${local._frr_lib}/_frrconf.tpl"),
+    filesha256("${local._frr_lib}/_initContainer.tpl"),
+    filesha256("${local._frr_lib}/_volume.tpl"),
+  ]))
+
   firezone_secrets = {
     guardianSecretKey     = coalesce(try(var.encryption_secrets.guardianSecretKey, null), random_bytes.guardian_secret_key.base64)
     secretKeyBase         = coalesce(try(var.encryption_secrets.secretKeyBase, null), random_bytes.secret_key_base.base64)
@@ -66,13 +77,14 @@ resource "helm_release" "firezone" {
         managed   = var.oidc_managed
         providers = var.oidc_providers
       }
-      adminEmail    = var.admin_email
-      adminPassword = var.admin_password
-      secrets       = local.firezone_secrets
-      ospf          = local.ospf_values
+      adminEmail           = var.admin_email
+      adminPassword        = var.admin_password
+      secrets              = local.firezone_secrets
+      ospf                 = local.ospf_values
       transit = {
         interfaces = var.transit.interfaces
       }
+      runtimePatchChecksum = local.runtime_patch_checksum
     })
   ]
 }
