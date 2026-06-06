@@ -112,10 +112,6 @@
     },
     "frr-sidecar": {
       "type": "object"
-    },
-    "runtimePatchChecksum": {
-      "type": "string",
-      "description": "SHA256 of frr-sidecar library chart templates; changing this forces helm_release to upgrade when library templates change (tofu drift detection for #51)."
     }
   }
 }

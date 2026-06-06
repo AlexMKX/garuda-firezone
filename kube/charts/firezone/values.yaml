@@ -57,10 +57,6 @@ ospf: null
 # transit_watcher.py automatically.
 transit:
   interfaces: []
-# Not used inside any chart template; helm_release sees a values change
-# whenever the frr-sidecar library chart templates change, triggering an
-# upgrade even when the consumer chart itself is unchanged (#51).
-runtimePatchChecksum: ""
 # OIDC reconcile. When oidc.providers is empty, no sidecar / Secret /
 # shareProcessNamespace is rendered (OIDC off). When non-empty, the
 # oidc-reconcile sidecar reconciles providers onto the running instance.

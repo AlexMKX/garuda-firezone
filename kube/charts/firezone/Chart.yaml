@@ -7,4 +7,4 @@ appVersion: "0.1.0"
 dependencies:
   - name: frr-sidecar
     version: "0.1.0"
-    repository: "file://../../../../frr-sidecar/charts/frr-sidecar"
+    repository: "oci://ghcr.io/alexmkx/charts"
