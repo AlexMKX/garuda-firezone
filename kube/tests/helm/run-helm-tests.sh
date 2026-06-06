@@ -10,9 +10,9 @@ MODULE_DIR="${SCRIPT_DIR}/../.."
 CHART_DIR="${MODULE_DIR}/charts/firezone"
 GOLDEN_DIR="${SCRIPT_DIR}/../golden"
 
-# Resolve the in-tree frr-sidecar library dependency (Chart.yaml lists
-# it via `file://` repository). Without this step `helm template` fails
-# with "no cached repo found" on a clean checkout. The Terraform Helm
+# Resolve the frr-sidecar library dependency from OCI (Chart.yaml lists
+# it via `oci://ghcr.io/alexmkx/charts`). Without this step `helm template`
+# fails with "no cached repo found" on a clean checkout. The Terraform Helm
 # provider performs the equivalent step automatically via
 # `dependency_update = true` on helm_release.
 helm dependency update "${CHART_DIR}"
