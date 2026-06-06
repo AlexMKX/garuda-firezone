@@ -33,9 +33,9 @@ resource "helm_release" "firezone" {
   create_namespace = false
   chart            = "${path.module}/charts/firezone"
 
-  # Resolve the in-tree frr-sidecar library chart (declared via
-  # `dependencies:` with `file://` repository) on every apply. Helm
-  # packages it into charts/frr-sidecar-0.1.0.tgz (gitignored).
+  # Resolve the frr-sidecar library chart from OCI
+  # (oci://ghcr.io/alexmkx/charts, pinned in Chart.yaml) on every apply.
+  # Helm fetches it into charts/frr-sidecar-<version>.tgz (gitignored).
   dependency_update = true
 
   values = [
