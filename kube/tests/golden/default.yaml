@@ -12,8 +12,8 @@ metadata:
     garuda.managed-by: helm
 type: Opaque
 stringData:
-  # Firezone Phoenix application env. Mirrors roles/firezone/templates/firezone.env.j2
-  # but rewritten as direct env vars rather than an .env file.
+  # Firezone Phoenix application env. This Secret is the source of truth for the firezone
+  # container's environment (rendered directly from Helm values).
   EXTERNAL_URL: "https://hub.example.net"
   DEFAULT_ADMIN_EMAIL: "admin@example.net"
   DEFAULT_ADMIN_PASSWORD: "fixture-password"
@@ -128,7 +128,7 @@ spec:
             type: DirectoryOrCreate
       containers:
         - name: firezone
-          image: "ghcr.io/firezone/firezone:latest"
+          image: "ghcr.io/alexmkx/garuda-firezone:latest"
           imagePullPolicy: IfNotPresent
           envFrom:
             - secretRef:
@@ -175,7 +175,7 @@ spec:
           # so it sees the same conntrack table as the firezone
           # container (same as `network_mode: service:firezone` in the
           # docker-compose stack).
-          image: "local/conntrack-log:latest"
+          image: "ghcr.io/alexmkx/garuda-conntrack-log:latest"
           imagePullPolicy: IfNotPresent
           command: ["conntrack", "-E", "-e", "NEW"]
           securityContext:

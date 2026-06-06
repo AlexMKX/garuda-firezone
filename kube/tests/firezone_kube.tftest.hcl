@@ -5,8 +5,8 @@ variables {
   namespace           = "garuda"
   name                = "firezone"
   firezone_dir        = "/opt/garuda/firezone"
-  firezone_image      = "ghcr.io/firezone/firezone:latest"
-  conntrack_log_image = "local/conntrack-log:latest"
+  firezone_image      = "ghcr.io/alexmkx/garuda-firezone:latest"
+  conntrack_log_image = "ghcr.io/alexmkx/garuda-conntrack-log:latest"
   server_fqdn         = "hub.example.net"
   admin_email         = "admin@example.net"
   admin_password      = "fixture-password"
@@ -88,7 +88,7 @@ run "values_include_conntrack_log_image" {
   command = plan
 
   assert {
-    condition     = strcontains(helm_release.firezone.values[0], "\"conntrackLog\": \"local/conntrack-log:latest\"")
+    condition     = strcontains(helm_release.firezone.values[0], "\"conntrackLog\": \"ghcr.io/alexmkx/garuda-conntrack-log:latest\"")
     error_message = "rendered values must include images.conntrackLog"
   }
 

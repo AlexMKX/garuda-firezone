@@ -15,9 +15,9 @@ nicAttach:
   - border
 labels: {}
 images:
-  firezone: ghcr.io/firezone/firezone:latest
+  firezone: ghcr.io/alexmkx/garuda-firezone:latest
   postgres: postgres:15
-  conntrackLog: local/conntrack-log:latest
+  conntrackLog: ghcr.io/alexmkx/garuda-conntrack-log:latest
   frr: ""
   oidcReconcile: python:3.12-slim-bookworm
 adminEmail: admin@example.net
