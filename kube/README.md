@@ -60,7 +60,7 @@ creates inside the pod netns).
 
 ```hcl
 module "firezone_kube" {
-  source = "../../../modules/firezone/kube"
+  source = "git::https://github.com/AlexMKX/garuda-firezone.git//kube?ref=v0.2.0"
 
   providers = {
     helm       = helm.hub

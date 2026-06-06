@@ -1,0 +1,8 @@
+.terraform/
+.terraform.lock.hcl
+kube/charts/*/charts/
+kube/charts/*/Chart.lock
+__pycache__/
+.pytest_cache/
+.coverage
+*.tgz
