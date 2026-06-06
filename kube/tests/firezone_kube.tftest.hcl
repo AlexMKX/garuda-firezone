@@ -6,7 +6,6 @@ variables {
   name                = "firezone"
   firezone_dir        = "/opt/garuda/firezone"
   firezone_image      = "ghcr.io/alexmkx/garuda-firezone:latest"
-  conntrack_log_image = "ghcr.io/alexmkx/garuda-conntrack-log:latest"
   server_fqdn         = "hub.example.net"
   admin_email         = "admin@example.net"
   admin_password      = "fixture-password"
@@ -84,17 +83,12 @@ run "values_include_admin_email_and_client_subnet" {
   }
 }
 
-run "values_include_conntrack_log_image" {
+run "values_exclude_conntrack_log_image" {
   command = plan
 
   assert {
-    condition     = strcontains(helm_release.firezone.values[0], "\"conntrackLog\": \"ghcr.io/alexmkx/garuda-conntrack-log:latest\"")
-    error_message = "rendered values must include images.conntrackLog"
-  }
-
-  assert {
-    condition     = strcontains(helm_release.firezone.values[0], "\"postgres\": \"postgres:15\"")
-    error_message = "rendered values must include default postgres image"
+    condition     = !strcontains(helm_release.firezone.values[0], "conntrackLog")
+    error_message = "rendered values must NOT include images.conntrackLog after audit split"
   }
 }
 
