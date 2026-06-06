@@ -122,17 +122,6 @@ spec:
                 - postgres
             initialDelaySeconds: 5
             periodSeconds: 10
-        - name: conntrack-log
-          # conntrack events logger. Shares the pod netns automatically
-          # so it sees the same conntrack table as the firezone
-          # container (same as `network_mode: service:firezone` in the
-          # docker-compose stack).
-          image: {{ .Values.images.conntrackLog | quote }}
-          imagePullPolicy: IfNotPresent
-          command: ["conntrack", "-E", "-e", "NEW"]
-          securityContext:
-            capabilities:
-              add: ["NET_ADMIN"]
         {{- $frr := include "frr-sidecar.container" (dict
               "image" .Values.images.frr
               "ospf" .Values.ospf

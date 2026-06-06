@@ -32,7 +32,6 @@ labels: {}
 images:
   firezone: ""
   postgres: postgres:15
-  conntrackLog: ""
   frr: ""
   oidcReconcile: ""
 # Required: consumer module supplies via var.admin_email. Empty default

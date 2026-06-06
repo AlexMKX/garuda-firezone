@@ -6,7 +6,6 @@ variables {
   name                = "firezone"
   firezone_dir        = "/opt/garuda/firezone"
   firezone_image      = "ghcr.io/alexmkx/garuda-firezone:latest"
-  conntrack_log_image = "ghcr.io/alexmkx/garuda-conntrack-log:latest"
   server_fqdn         = "hub.example.net"
   admin_email         = "admin@example.net"
   admin_password      = "fixture-password"

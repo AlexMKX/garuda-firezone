@@ -69,7 +69,6 @@ resource "helm_release" "firezone" {
       images = {
         firezone      = var.firezone_image
         postgres      = var.postgres_image
-        conntrackLog  = var.conntrack_log_image
         frr           = var.frr_image
         oidcReconcile = var.oidc_reconcile_image
       }

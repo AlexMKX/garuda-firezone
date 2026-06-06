@@ -363,7 +363,7 @@ spec:
         garuda.managed-by: helm
       annotations:
         k8s.v1.cni.cncf.io/networks: "backbone@backbone,border@border"
-        checksum/env-secret: 15031d01d766acfa402927ebc9eea65a5710c93eb6b9ef547bd0c4d728eb04ce
+        checksum/env-secret: 7a96f649fa8f34e6a882d3e79d8b7926e40ec33ebbc06d4b3116b99a7fdf2044
         checksum/oidc-secret: bd8f016db9400c365b824aba6504d222346886bb726064bd385d7d1a1dd8daa4
         checksum/oidc-reconcile: 0a59e3528ca96f2afa373961f66f5f8b533fe5ad346e0cfe06edcb5ce893f35d
     spec:
@@ -442,17 +442,6 @@ spec:
                 - postgres
             initialDelaySeconds: 5
             periodSeconds: 10
-        - name: conntrack-log
-          # conntrack events logger. Shares the pod netns automatically
-          # so it sees the same conntrack table as the firezone
-          # container (same as `network_mode: service:firezone` in the
-          # docker-compose stack).
-          image: "ghcr.io/alexmkx/garuda-conntrack-log:latest"
-          imagePullPolicy: IfNotPresent
-          command: ["conntrack", "-E", "-e", "NEW"]
-          securityContext:
-            capabilities:
-              add: ["NET_ADMIN"]
         - name: oidc-reconcile
           image: "python:3.12-slim-bookworm"
           imagePullPolicy: IfNotPresent

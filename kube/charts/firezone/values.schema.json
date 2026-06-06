@@ -48,11 +48,10 @@
     "images": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["firezone", "postgres", "conntrackLog"],
+      "required": ["firezone", "postgres"],
       "properties": {
         "firezone":      { "type": "string" },
         "postgres":      { "type": "string" },
-        "conntrackLog":  { "type": "string" },
         "frr":           { "type": "string" },
         "oidcReconcile": { "type": "string" }
       }

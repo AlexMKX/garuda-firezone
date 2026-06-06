@@ -26,7 +26,6 @@ creates inside the pod netns).
 | `firezone_dir` | yes | Absolute host path that backs Firezone runtime state via hostPath. |
 | `firezone_image` | yes | Image reference for the firezone application container. |
 | `postgres_image` | no | Default `postgres:15`. |
-| `conntrack_log_image` | yes | Image for the conntrack-log sidecar. |
 | `frr_image` | when `ospf != null` | Image for the optional frr-sidecar. |
 | `server_fqdn` | yes | External FQDN; both `EXTERNAL_URL` and IngressRoute Host match. |
 | `admin_email` | yes | Initial admin email (`DEFAULT_ADMIN_EMAIL`). |
@@ -71,7 +70,6 @@ module "firezone_kube" {
   namespace           = module.garuda_k8s_hub.namespace
   firezone_dir        = local.firezone_facts.directory
   firezone_image      = var.fz_firezone_image
-  conntrack_log_image = var.fz_conntrack_log_image
   server_fqdn         = local.firezone_facts.server_name
   admin_email         = local.firezone_facts.default_admin_email
   admin_password      = local.firezone_facts.admin_password

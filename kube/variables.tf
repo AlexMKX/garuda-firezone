@@ -40,11 +40,6 @@ variable "postgres_image" {
   default     = "postgres:15"
 }
 
-variable "conntrack_log_image" {
-  description = "Image reference for the conntrack-log sidecar container."
-  type        = string
-}
-
 variable "frr_image" {
   description = "Image reference for the frr-sidecar container. Required when ospf != null; ignored otherwise."
   type        = string
